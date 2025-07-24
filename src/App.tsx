@@ -8,6 +8,7 @@ interface Category {
   icon: React.ReactNode;
   description: string;
   color: string;
+  content: string[];
 }
 
 const categories: Category[] = [
@@ -16,28 +17,52 @@ const categories: Category[] = [
     name: '考公面试',
     icon: <Building2 className="w-6 h-6" />,
     description: '公务员面试场景应变',
-    color: 'bg-gradient-to-br from-blue-600 to-blue-700'
+    color: 'bg-gradient-to-br from-blue-600 to-blue-700',
+    content: [
+      '• 结构化面试题目',
+      '• 政治觉悟考察',
+      '• 工作态度评估',
+      '• 应变能力测试'
+    ]
   },
   {
     id: 'tizhi',
     name: '体制内工作',
     icon: <Users className="w-6 h-6" />,
     description: '机关单位日常工作应对',
-    color: 'bg-gradient-to-br from-emerald-600 to-emerald-700'
+    color: 'bg-gradient-to-br from-emerald-600 to-emerald-700',
+    content: [
+      '• 办公室人际关系',
+      '• 领导沟通技巧',
+      '• 工作汇报方式',
+      '• 同事协作处理'
+    ]
   },
   {
     id: 'zhichang',
     name: '公司职场',
     icon: <Brain className="w-6 h-6" />,
     description: '企业职场人际关系处理',
-    color: 'bg-gradient-to-br from-purple-600 to-purple-700'
+    color: 'bg-gradient-to-br from-purple-600 to-purple-700',
+    content: [
+      '• 企业文化适应',
+      '• 团队协作技巧',
+      '• 职场晋升策略',
+      '• 客户关系维护'
+    ]
   },
   {
     id: 'canzhuoli',
     name: '山东餐桌礼仪',
     icon: <Utensils className="w-6 h-6" />,
     description: '酒桌文化与餐桌应变',
-    color: 'bg-gradient-to-br from-amber-600 to-amber-700'
+    color: 'bg-gradient-to-br from-amber-600 to-amber-700',
+    content: [
+      '• 酒桌座次安排',
+      '• 敬酒话术技巧',
+      '• 餐桌礼仪规范',
+      '• 商务宴请应对'
+    ]
   }
 ];
 
@@ -329,80 +354,85 @@ function App() {
                 返回首页
               </button>
               <div className="ml-auto flex items-center space-x-4">
-                <span className="text-white">选择题练习</span>
-                <span className="text-blue-300">{filteredQuestions.length} 题</span>
+                <span className="text-white">进度</span>
+                <span className="text-blue-300">{currentQuestionIndex + 1} / {filteredQuestions.length}</span>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[500px]">
-              <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6">
-                <h2 className="text-2xl font-bold mb-2">记忆闪卡</h2>
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
+                <h2 className="text-2xl font-bold mb-2">选择题练习</h2>
                 <div className="bg-white/20 rounded-lg p-4">
-                  <p className="text-lg">{currentFlashcard?.scenario}</p>
+                  <p className="text-lg">{currentQuestion?.scenario}</p>
                 </div>
               </div>
 
               <div className="p-8">
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-8 border-2 border-blue-100">
                   <div className="flex items-start">
-                    <div className="bg-purple-500 text-white rounded-full p-2 mr-4 flex-shrink-0">
+                    <div className="bg-blue-500 text-white rounded-full p-2 mr-4 flex-shrink-0">
                       <BookOpen className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-purple-900 font-medium mb-2">题目：</p>
-                      <p className="text-gray-800 text-lg leading-relaxed">{currentFlashcard?.question}</p>
+                      <p className="text-blue-900 font-medium mb-2">题目：</p>
+                      <p className="text-gray-800 text-lg leading-relaxed">{currentQuestion?.question}</p>
                     </div>
                   </div>
                 </div>
 
-                {!showAnswer ? (
-                  <div className="text-center">
-                    <div className="mb-8">
-                      <div className="inline-block bg-gradient-to-r from-purple-100 to-blue-100 rounded-full px-6 py-3 mb-4">
-                        <span className="text-purple-700 font-medium">点击查看最佳答案</span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={toggleAnswer}
-                      className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-12 py-4 rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl text-lg"
-                    >
-                      查看答案
-                    </button>
+                {!showResult ? (
+                  <div className="space-y-4">
+                    {currentQuestion?.options.map((option, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleAnswerSelect(index)}
+                        className="w-full text-left bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl p-4 transition-all duration-200 hover:shadow-md"
+                      >
+                        <div className="flex items-start">
+                          <span className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center text-sm font-medium mr-4 flex-shrink-0">
+                            {String.fromCharCode(65 + index)}
+                          </span>
+                          <p className="text-gray-800">{option.text}</p>
+                        </div>
+                      </button>
+                    ))}
                   </div>
                 ) : (
                   <div className="space-y-6">
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6">
                       <h3 className="text-lg font-semibold text-green-900 mb-4 flex items-center">
                         <Award className="w-5 h-5 mr-2" />
-                        最佳答案
+                        你的选择
                       </h3>
                       
                       {(() => {
-                        const bestOption = currentFlashcard?.options.reduce((best, current) => 
-                          current.score > best.score ? current : best
-                        );
+                        const selectedOption = currentQuestion?.options[userAnswers[currentQuestionIndex]];
                         return (
                           <div>
                             <div className="bg-white rounded-lg p-4 mb-4 border border-green-200">
-                              <p className="text-gray-800 font-medium mb-2">{bestOption?.text}</p>
+                              <p className="text-gray-800 font-medium mb-2">{selectedOption?.text}</p>
                               <div className="flex items-center justify-between">
-                                <span className="text-green-600 text-sm">{bestOption?.feedback}</span>
-                                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                                  {bestOption?.score}分
+                                <span className="text-green-600 text-sm">{selectedOption?.feedback}</span>
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                  selectedOption && selectedOption.score >= 90 ? 'bg-green-100 text-green-800' :
+                                  selectedOption && selectedOption.score >= 70 ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-red-100 text-red-800'
+                                }`}>
+                                  {selectedOption?.score}分
                                 </span>
                               </div>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-4">
-                              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
-                                <p className="font-medium text-purple-900 mb-2">💭 领导内心想法:</p>
-                                <p className="text-purple-800 italic text-sm">"{bestOption?.leaderThought}"</p>
+                              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
+                                <p className="font-medium text-blue-900 mb-2">💭 领导内心想法:</p>
+                                <p className="text-blue-800 italic text-sm">"{selectedOption?.leaderThought}"</p>
                               </div>
                               
-                              {bestOption?.translation && (
+                              {selectedOption?.translation && (
                                 <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-4">
                                   <p className="font-medium text-amber-900 mb-2">🔍 黑话翻译:</p>
-                                  <p className="text-amber-800 text-sm">{bestOption.translation}</p>
+                                  <p className="text-amber-800 text-sm">{selectedOption.translation}</p>
                                 </div>
                               )}
                             </div>
@@ -411,18 +441,12 @@ function App() {
                       })()}
                     </div>
 
-                    <div className="flex justify-center space-x-4">
+                    <div className="text-center">
                       <button
-                        onClick={toggleAnswer}
-                        className="bg-gray-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-600 transition-all duration-200"
+                        onClick={handleNextQuestion}
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl"
                       >
-                        隐藏答案
-                      </button>
-                      <button
-                        onClick={handleNextFlashcard}
-                        className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-3 rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-                      >
-                        下一题
+                        {currentQuestionIndex < filteredQuestions.length - 1 ? '下一题' : '查看结果'}
                       </button>
                     </div>
                   </div>
@@ -477,10 +501,9 @@ function App() {
                   <div className="bg-gray-50 rounded-lg p-4 mb-4">
                     <p className="text-sm text-gray-600 mb-2">包含内容:</p>
                     <ul className="text-sm text-gray-700 space-y-1">
-                      <li>• 选择题练习</li>
-                      <li>• 实时评分反馈</li>
-                      <li>• 详细答案解析</li>
-                      <li>• 领导内心想法</li>
+                      {category.content.map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
                     </ul>
                   </div>
                   
