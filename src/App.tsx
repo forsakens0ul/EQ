@@ -64,6 +64,13 @@ function App() {
     setShowAnswer(false);
   };
 
+  const handleFlashcardSelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setCurrentView('flashcard');
+    setFlashcardIndex(Math.floor(Math.random() * questions.filter(q => q.category === categoryId).length));
+    setShowAnswer(false);
+  };
+
   const handleNextFlashcard = () => {
     const categoryQuestions = questions.filter(q => q.category === selectedCategory);
     setFlashcardIndex(Math.floor(Math.random() * categoryQuestions.length));
@@ -94,6 +101,7 @@ function App() {
     setCurrentQuestionIndex(0);
     setUserAnswers([]);
     setShowResult(false);
+    setShowAnswer(false);
   };
 
   const calculateTotalScore = () => {
@@ -187,7 +195,7 @@ function App() {
     );
   }
 
-  if (currentView === 'quiz') {
+  if (currentView === 'flashcard') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
         <div className="container mx-auto px-4 py-8">
@@ -202,6 +210,126 @@ function App() {
               </button>
               <div className="ml-auto flex items-center space-x-4">
                 <span className="text-white">记忆闪卡</span>
+                <span className="text-blue-300">{filteredQuestions.length} 题</span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[500px]">
+              <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6">
+                <h2 className="text-2xl font-bold mb-2">记忆闪卡</h2>
+                <div className="bg-white/20 rounded-lg p-4">
+                  <p className="text-lg">{currentFlashcard?.scenario}</p>
+                </div>
+              </div>
+
+              <div className="p-8">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 mb-8 border-2 border-blue-100">
+                  <div className="flex items-start">
+                    <div className="bg-purple-500 text-white rounded-full p-2 mr-4 flex-shrink-0">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-purple-900 font-medium mb-2">题目：</p>
+                      <p className="text-gray-800 text-lg leading-relaxed">{currentFlashcard?.question}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {!showAnswer ? (
+                  <div className="text-center">
+                    <div className="mb-8">
+                      <div className="inline-block bg-gradient-to-r from-purple-100 to-blue-100 rounded-full px-6 py-3 mb-4">
+                        <span className="text-purple-700 font-medium">点击查看最佳答案</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={toggleAnswer}
+                      className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-12 py-4 rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl text-lg"
+                    >
+                      查看答案
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6">
+                      <h3 className="text-lg font-semibold text-green-900 mb-4 flex items-center">
+                        <Award className="w-5 h-5 mr-2" />
+                        最佳答案
+                      </h3>
+                      
+                      {(() => {
+                        const bestOption = currentFlashcard?.options.reduce((best, current) => 
+                          current.score > best.score ? current : best
+                        );
+                        return (
+                          <div>
+                            <div className="bg-white rounded-lg p-4 mb-4 border border-green-200">
+                              <p className="text-gray-800 font-medium mb-2">{bestOption?.text}</p>
+                              <div className="flex items-center justify-between">
+                                <span className="text-green-600 text-sm">{bestOption?.feedback}</span>
+                                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                  {bestOption?.score}分
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
+                                <p className="font-medium text-purple-900 mb-2">💭 领导内心想法:</p>
+                                <p className="text-purple-800 italic text-sm">"{bestOption?.leaderThought}"</p>
+                              </div>
+                              
+                              {bestOption?.translation && (
+                                <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-4">
+                                  <p className="font-medium text-amber-900 mb-2">🔍 黑话翻译:</p>
+                                  <p className="text-amber-800 text-sm">{bestOption.translation}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="flex justify-center space-x-4">
+                      <button
+                        onClick={toggleAnswer}
+                        className="bg-gray-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-600 transition-all duration-200"
+                      >
+                        隐藏答案
+                      </button>
+                      <button
+                        onClick={handleNextFlashcard}
+                        className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-3 rounded-xl font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+                      >
+                        下一题
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'quiz') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center mb-6">
+              <button
+                onClick={handleBackToHome}
+                className="flex items-center text-white hover:text-blue-300 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                返回首页
+              </button>
+              <div className="ml-auto flex items-center space-x-4">
+                <span className="text-white">选择题练习</span>
                 <span className="text-blue-300">{filteredQuestions.length} 题</span>
               </div>
             </div>
@@ -349,15 +477,15 @@ function App() {
                   <div className="bg-gray-50 rounded-lg p-4 mb-4">
                     <p className="text-sm text-gray-600 mb-2">包含内容:</p>
                     <ul className="text-sm text-gray-700 space-y-1">
-                      <li>• 记忆闪卡学习</li>
-                      <li>• 随机题目练习</li>
-                      <li>• 最佳答案展示</li>
-                      <li>• 深度解析说明</li>
+                      <li>• 选择题练习</li>
+                      <li>• 实时评分反馈</li>
+                      <li>• 详细答案解析</li>
+                      <li>• 领导内心想法</li>
                     </ul>
                   </div>
                   
                   <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-lg font-medium group-hover:from-blue-700 group-hover:to-blue-800 transition-all duration-200">
-                    开始学习
+                    开始练习
                   </button>
                 </div>
               </div>
@@ -366,31 +494,29 @@ function App() {
         </div>
 
         <div className="mt-16 text-center">
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-white mb-4">记忆闪卡学习法</h2>
-            <div className="grid md:grid-cols-3 gap-6 text-white">
-              <div className="text-center">
-                <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <BookOpen className="w-8 h-8" />
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-6xl mx-auto">
+            <h2 className="text-2xl font-bold text-white mb-8">记忆闪卡</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {categories.map((category) => (
+                <div
+                  key={`flashcard-${category.id}`}
+                  onClick={() => handleFlashcardSelect(category.id)}
+                  className="group cursor-pointer transform hover:scale-105 transition-all duration-300"
+                >
+                  <div className="bg-white/20 backdrop-blur-sm rounded-xl p-6 hover:bg-white/30 transition-all duration-300">
+                    <div className="text-white mb-4">
+                      {category.icon}
+                    </div>
+                    <h3 className="text-white font-semibold mb-2">{category.name}</h3>
+                    <p className="text-gray-300 text-sm mb-4">快速记忆学习</p>
+                    <div className="bg-white/20 rounded-lg px-3 py-1 text-xs text-white">
+                      {questions.filter(q => q.category === category.id).length} 题
+                    </div>
+                  </div>
                 </div>
-                <h3 className="font-semibold mb-2">随机出题</h3>
-                <p className="text-sm text-gray-300">智能随机选题，加深记忆印象</p>
-              </div>
-              <div className="text-center">
-                <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Award className="w-8 h-8" />
-                </div>
-                <h3 className="font-semibold mb-2">最佳答案</h3>
-                <p className="text-sm text-gray-300">直接展示高分答案，学习效率更高</p>
-              </div>
-              <div className="text-center">
-                <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                  <Brain className="w-8 h-8" />
-                </div>
-                <h3 className="font-semibold mb-2">深度解析</h3>
-                <p className="text-sm text-gray-300">揭示潜台词，理解真实意图</p>
-              </div>
+              ))}
             </div>
+            <p className="text-gray-300 mt-6">点击任意模块开始记忆闪卡学习，随机出题，直接查看最佳答案</p>
           </div>
         </div>
       </div>
