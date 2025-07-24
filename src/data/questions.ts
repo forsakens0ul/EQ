@@ -1,5 +1,5 @@
 import gongwuData from './gongwuQuestions.json';
-import tizhiData from './questionsNew.json';
+import tizhiData from './tizhiQuestions.json';
 import zhichangData from './zhichangQuestions.json';
 import canzhuoliData from './canzhuoliQuestions.json';
 
