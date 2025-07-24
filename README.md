@@ -115,7 +115,7 @@ src/
 
 ## 🌐 在线体验
 
-访问地址：https://deluxe-dragon-9298da.netlify.app
+访问地址：https://eqtest.chalice.lol/
 
 ## 📝 许可证
 
@@ -124,13 +124,5 @@ MIT License
 ## 🤝 贡献指南
 
 欢迎提交 Issue 和 Pull Request 来帮助改进项目！
-
-## 📞 联系方式
-
-如有问题或建议，请通过以下方式联系：
-- 提交 GitHub Issue
-- 发送邮件至 [邮箱地址]
-
----
 
 ⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！
